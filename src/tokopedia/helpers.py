@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
+from src.common.exceptions import NoProductsFound
 from src.common.selenium import get_selenium_driver
 
 
@@ -102,8 +103,11 @@ def get_products(category_slug, length=100):
 
     def load_products():
         browser.execute_script("window.scrollTo(0, 5000);")
-        action.move_to_element(browser.find_elements_by_css_selector(
-            'a[data-testid=lnkProductContainer]')[-1]).perform()
+        ps = browser.find_elements_by_css_selector(
+            'a[data-testid=lnkProductContainer]')
+        if not ps:
+            raise NoProductsFound
+        action.move_to_element(ps[-1]).perform()
         wait.until(lambda b: len(b.find_elements(By.CSS_SELECTOR,
                    'a[data-testid=lnkProductContainer]')) > 10)
 
@@ -121,6 +125,9 @@ def get_products(category_slug, length=100):
 
     load_products()
     process_products()
+    if not products_data:
+        raise NoProductsFound
+
     while len(products_data) < length:
         load_next_page()
         load_products()
