@@ -86,7 +86,7 @@ def get_product_data(url):
     return {
         'name': content[0]['data'][0]['name'],
         'description': deskripsi[0]['subtitle'] if deskripsi else '',
-        'images': [media['urlThumbnail'] for media in medias if media.get('urlThumbnail')],
+        'images': '\n'.join([media['urlThumbnail'] for media in medias if media.get('urlThumbnail')]),
         'price': content[0]['data'][0]['price']['value'],
         'currency': content[0]['data'][0]['price']['currency'],
         'rating': res['data']['pdpGetLayout']['basicInfo']['stats']['rating'],
